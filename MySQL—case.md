@@ -1,0 +1,34 @@
+## Case 语法
+```SQL
+Case:
+ UPDATE
+  SDS_EQU_TRADING_ACCOUNT TRAD
+ SET
+  TRAD.VERSION_NO = TRAD.VERSION_NO + 1,
+  TRAD.UPDATE_DATE = SYSDATE,
+  TRAD.UPDATE_USER = V_UPDATE_USER_ID,
+  TRAD.EXPIRY_DATE_SA_4=
+  (case
+  when V_EXPIRY_DATE_SA_4 is null then V_EXPIRY_DATE_SA_4
+  else  TRUNC(ADD_MONTHS(TRAD.EXPIRY_DATE_SA_4, 12))
+  end),
+  TRAD.EXPIRY_DATE_SA_8=
+  (case
+  when V_EXPIRY_DATE_SA_8 is null then V_EXPIRY_DATE_SA_8
+  else  TRUNC(ADD_MONTHS(TRAD.EXPIRY_DATE_SA_8, 12))
+  end)
+  where TRAD.ID = V_ID;
+```
+---
+***SPOOL 中用 if 判断：***
+```SQL
+IF (TRUNC(SYSDATE) - TRUNC(SYSDATE,IW)) <> 0 THEN
+ SPOOL "&&dayname._Monthly_SA_to_be_renewed.csv"
+ SELECT 1 FROM DUAL ;
+SPOOL OFF
+ELSE
+ SPOOL "&&dayname._Monthly_SA_to_be_renewed.csv"
+ SELECT 2 FROM DUAL  ;
+SPOOL OFF
+END IF;
+```
